@@ -19,6 +19,25 @@
 
 ## 项目结构
 
+```
+rescue_vision_2.0/
+├── .gitignore
+├── README.md
+├── config/
+│   ├── hsv_thresholds_black.json
+│   └── hsv_thresholds_red.json
+├── src/
+│   ├── UART.py
+│   ├── main.py
+│   └── vision.py
+└── tests/
+    ├── 紫色阈值.py
+    ├── 红色阈值.py
+    ├── 蓝色阈值.py
+    ├── 黄色阈值.py
+    └── 黑色阈值.py
+```
+
 ## 配置说明
 1. 运行阈值文件，然后会在config目录生成对应颜色的阈值配置文件
 
