@@ -36,3 +36,9 @@ def send_no_target():
     data = bytes([0xAA, 0, 0, 0, 0, 0xBB])
     ser.write(data)
     print("发送: 未发现目标")
+
+def close():
+    """关闭串口连接"""
+    if ser and ser.is_open:
+        ser.close()
+        print("关闭串口333333333333333")
