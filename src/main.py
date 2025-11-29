@@ -29,7 +29,7 @@ has_yellow = False    # 是否已经抓了黄球
 
 # 初始化摄像头和串口
 cap = cv2.VideoCapture(camera_id)
-print(f"队伍: {team_color}, 开始!")
+print(f"队伍: {team_color}, 开始!!!!!!!!!!!!")
 
 while True:
     ret, frame = cap.read()
@@ -53,6 +53,7 @@ while True:
         valid_balls = []
         
         if first_grab:
+            
             # 第一次必须抓己方颜色小球
             if team_color == "red" and red_balls:
                 valid_balls = red_balls
@@ -100,7 +101,7 @@ while True:
                 
             UART.send_data(x_offset, y_offset, ball_type, distance)
             
-            if r > 25:  # 接近目标
+            if r > 25:  # 接近目标（可能需要调整）
                 current_state = 2  # 切换到抓取状态
                 print("距离足够近，切换到状态2: 抓取")
     
@@ -117,16 +118,19 @@ while True:
         print("切换到状态3: 寻找安全区")
     
     elif current_state == 3:  # 找安全区
-        if vision.find_purple_fence(frame):
-            zone_type = 5 if team_color == "red" else 6
-            # 发送安全区类型，距离设为0
-            UART.send_data(0, 0, zone_type, 0)
+        zone_info = vision.find_safe_zone(frame, team_color)
+        if zone_info:
+            x, y, zone_type = zone_info
+            # 计算安全区相对于图像中心的偏移量
+            x_offset, y_offset = vision.calculate_offset(x, y, frame_width, frame_height)
+            # 发送安全区具体位置坐标
+            UART.send_data(x_offset, y_offset, zone_type, 0)
             current_state = 4  # 切换到放置状态
-            print("找到安全区，切换到状态4: 放置")
+            print(f"找到安全区，位置({x}, {y})，切换到状态4: 放置")
         else:
-            # 继续寻找安全区
+            # 没找到安全区，发送特定信号让机器人继续寻找
             zone_type = 5 if team_color == "red" else 6
-            UART.send_data(0, 0, zone_type, 100)
+            UART.send_data(0, 0, zone_type, 100)  # 距离100表示继续寻找
             print("正在寻找安全区...")
     
     elif current_state == 4:  # 放置小球

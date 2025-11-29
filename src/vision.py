@@ -29,14 +29,25 @@ def find_balls(frame, color_name):
     balls = []
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if 100 < area < 1000:
+        if 100 < area < 1000:   #轮廓面积：可能需要调整
             (x, y), radius = cv2.minEnclosingCircle(cnt)
             balls.append((int(x), int(y), int(radius)))
     
     return balls
 
-# 检测紫色围栏（安全区边界）
-def find_purple_fence(frame):
+# 寻找安全区
+
+# 安全区识别：
+# 1. 检测紫色围栏，当识别到大面积紫色区域时，判断它为安全区
+# 2. 检测紫色围栏里面的长方形颜色，当识别到长方形颜色与队伍颜色一致时，判断它为己方安全区
+
+def find_safe_zone(frame, team_color):
+    """
+    检测安全区并返回位置信息
+    frame: 图像帧
+    team_color: 队伍颜色 ("red" 或 "blue")
+    返回: (x坐标, y坐标, 安全区类型)
+    """
     purple_config = load_color("purple")
     lower = np.array(purple_config["lower"])
     upper = np.array(purple_config["upper"])
@@ -51,9 +62,14 @@ def find_purple_fence(frame):
         largest_contour = max(contours, key=cv2.contourArea)
         area = cv2.contourArea(largest_contour)
         if area > 500:  # 围栏面积较大
-            return True
-    
-    return False
+            # 返回安全区中心位置
+            M = cv2.moments(largest_contour)
+            if M["m00"] != 0:
+                cx = int(M["m10"] / M["m00"])
+                cy = int(M["m01"] / M["m00"])
+                zone_type = 5 if team_color == "red" else 6
+                return (cx, cy, zone_type)  # 返回坐标
+    return None
 
 # 计算相对图像中心的偏移量
 def calculate_offset(x, y, frame_width=640, frame_height=480):
