@@ -23,6 +23,11 @@ def find_balls(frame, color_name):
     lower = np.array(color_config["lower"])
     upper = np.array(color_config["upper"])
     mask = cv2.inRange(hsv, lower, upper)
+
+    # 形态学操作，去除噪声
+    kernel = np.ones((3, 3), np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
     
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
@@ -31,8 +36,15 @@ def find_balls(frame, color_name):
         area = cv2.contourArea(cnt)
         if 100 < area < 1000:   #轮廓面积：可能需要调整
             (x, y), radius = cv2.minEnclosingCircle(cnt)
-            balls.append((int(x), int(y), int(radius)))
+
+            # 圆形度检查，确保是近似圆形
+            perimeter = cv2.arcLength(cnt, True)
+            if perimeter > 0:
+                circularity = 4 * np.pi * area / (perimeter * perimeter)
+                if circularity > 0.6:  # 圆形度阈值，过滤非圆形物体
+                    balls.append((int(x), int(y), int(radius)))
     
+
     return balls
 
 # 寻找安全区
