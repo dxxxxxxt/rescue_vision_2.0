@@ -113,6 +113,7 @@ while True:
         if ball_type == 3:  # 黄色小球
             has_yellow = True
             print("已抓取黄色球! 不再抓取其他球")
+            print("已抓取黄色球! 不再抓取其他球")
         
         current_state = 3  # 切换到找安全区状态
         print("切换到状态3: 寻找安全区")
