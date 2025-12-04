@@ -8,7 +8,7 @@ config_dir = 'config'
 os.makedirs(config_dir, exist_ok=True)
 
 # 初始化摄像头
-cap = cv2.VideoCapture(9)
+cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("无法打开摄像头")
     exit(1)
@@ -142,3 +142,8 @@ while True:
 # 清理
 cap.release()
 cv2.destroyAllWindows()
+
+
+
+
+
