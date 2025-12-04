@@ -31,6 +31,10 @@ has_yellow = False    # 是否已经抓了黄球
 cap = cv2.VideoCapture(camera_id)
 print(f"队伍: {team_color}, 开始!!!!!!!!!!!!")
 
+# 不断从串口读取cmd的值
+    # 按键1 -> 0 -> 寻找小球状态
+    # 按键2 -> 1 -> 寻找安全区状态
+    
 while True:
     ret, frame = cap.read()
     if not ret:
@@ -40,8 +44,13 @@ while True:
     frame_height = frame.shape[0]
     
     # 读取电控数据
-    UART.read_ecu_command()
-    
+    cmd = UART.read_ecu_command()
+    if cmd == 0XAA:
+        pass
+    elif cmd == 0XBB:
+        current_state = 0 
+        continue
+
     # 检测所有小球
     red_balls = vision.find_balls(frame, "red")
     blue_balls = vision.find_balls(frame, "blue") 
