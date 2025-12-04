@@ -13,14 +13,19 @@
 rescue_vision_2.0/
 ├── .gitignore
 ├── README.md
+├── .vscode/
 ├── config/
 │   ├── config.json
 │   ├── hsv_thresholds_black.json
-│   └── hsv_thresholds_red.json
+│   ├── hsv_thresholds_red.json
+│   ├── hsv_thresholds_blue.json
+│   └── hsv_thresholds_yellow.json
 ├── src/
 │   ├── UART.py
 │   ├── main.py
-│   └── vision.py
+│   ├── vision.py
+│   ├── sender.py
+│   └── trans.py
 └── tests/
     ├── 紫色阈值.py
     ├── 红色阈值.py
@@ -31,10 +36,16 @@ rescue_vision_2.0/
 
 ## 配置说明
 1. 运行阈值文件，然后会在config目录生成对应颜色的阈值配置文件
-2. 其他配置都在config文件里面，包含：
-队伍颜色；
-摄像头的索引，图像分辨率，帧率用默认值；
-串口设备，波特率，读取超时时间用默认值1秒 。
+2. 主要配置文件为config/config.json，包含：
+   - 队伍颜色（red/blue）
+   - 摄像头配置：设备ID、宽度、高度
+   - 串口配置：端口名称、波特率
+3. 颜色阈值配置文件：
+   - hsv_thresholds_black.json：黑色小球检测阈值
+   - hsv_thresholds_red.json：红色小球检测阈值
+   - hsv_thresholds_blue.json：蓝色小球检测阈值
+   - hsv_thresholds_yellow.json：黄色小球检测阈值
+   - hsv_thresholds_purple.json：紫色围栏检测阈值（由tests/紫色阈值.py运行生成）
 
 
 ## 主要模块功能
@@ -55,6 +66,10 @@ rescue_vision_2.0/
 状态2：抓取小球
 状态3：寻找安全区，即目标区域
 状态4：放置小球
+4. 数据发送模块 (sender.py)
+预留的数据发送功能扩展模块
+5. 转换模块 (trans.py)
+预留的数据转换或处理功能扩展模块
 
 ## 注意事项
 1. 串口通信模块需要根据实际情况进行修改，如串口名称、波特率等
